@@ -4,7 +4,9 @@
 
 Simply include the JS file in your document's `<head>` or at the bottom of your document's `<body>`.
 
-Then enable validation on any input field, for example -- e-mail -- by calling `IV.email(input1)`, where `input1` is an input element. See below for n example.
+Then enable validation on any input field, for example e-mail, by calling `IV.email(document.getElementById("input-email"));`.
+
+Methods are polymorphic, so you can pass in an input element object like above, or a scalar for a quick check. E.g., `alert( IV.email("kai@mallea.net") === true );`
 
 ### Example
 

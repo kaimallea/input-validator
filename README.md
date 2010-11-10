@@ -4,6 +4,8 @@
 
 Simply include the JS file in your document's `<head>` or at the bottom of your document's `<body>`.
 
+Then enable validation on any input field, for example -- e-mail -- by calling `IV.email(input1)`, where `input1` is an input element. See below for n example.
+
 ### Example
 
     <!DOCTYPE html>

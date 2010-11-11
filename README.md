@@ -2,15 +2,17 @@
 
 ## TODO
 
-A LOT.
+Tons. :)
 
 ## Usage
 
-Simply include the CSS file in your document's `head` and the JS file in your document's `<head>` or at the bottom of your document's `<body>`.
+Simply link to the CSS file in your document's `<head>` and include the JS file in your document's `<head>` or at the bottom of your document's `<body>`.
 
-Then enable validation on any input field, such as e-mail, by calling `IV.email(document.getElementById("input-email"));`.
+Then enable validation on any input field, such as e-mail, by calling `IV.email(document.getElementById("input-email"));`. 
 
 Methods are polymorphic, so you can pass in an input element object like above, or a primitive value for a quick check. E.g., `alert( IV.email("kai@mallea.net") === true );`
+
+Visual indications for input validity are automatic and can be customized by editing the stylesheet.
 
 ### Example
 

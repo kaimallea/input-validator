@@ -10,7 +10,7 @@ Simply include the CSS file in your document's `head` and the JS file in your do
 
 Then enable validation on any input field, such as e-mail, by calling `IV.email(document.getElementById("input-email"));`.
 
-Methods are polymorphic, so you can pass in an input element object like above, or a scalar for a quick check. E.g., `alert( IV.email("kai@mallea.net") === true );`
+Methods are polymorphic, so you can pass in an input element object like above, or a primitive value for a quick check. E.g., `alert( IV.email("kai@mallea.net") === true );`
 
 ### Example
 

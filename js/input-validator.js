@@ -5,7 +5,35 @@
  *
  */
 var IV = (function () {
-    var _tracked_elements = [];
+    var _defaults = {
+            
+            // Locations for notifications
+            notify_location: {
+                
+                // Below element e
+                bottom: function (e) {
+                    return {
+                        x: e.offsetLeft,
+                        y: (e.offsetTop + e.offsetHeight)
+                    };                    
+                },
+                
+                // To the right of element e
+                right: function (e) {
+                    return {
+                        x: (e.offsetLeft + e.offsetWidth),
+                        y: e.offsetTop
+                    };
+                }
+            },
+            
+            // Default messages to display in notifications
+            msgs: {
+                email: "Invalid e-mail address",
+                credit: "Invalid credit card number",
+                password: "Password must be at least 8 characters and contain at least once uppercase letter"
+            }
+        };
     
     /**
      * E-mail validator
@@ -16,7 +44,7 @@ var IV = (function () {
     /**
      * Credit card validator
      *
-     * Credit: Wikipedia
+     * Luhn algorithm (http://en.wikipedia.org/wiki/Luhn_algorithm)
      */
     var _credit_validator = function (num) {
         num = (num + '').replace(/\D+/g, '').split('').reverse();
@@ -30,6 +58,9 @@ var IV = (function () {
     };
 
 
+    /**
+     * Password validator
+     */
     var _password_validator = function (str) {
         // Minimum length
         if (str.length < 8) { return false }
@@ -42,7 +73,7 @@ var IV = (function () {
     
    
     function isInputElement (e) {
-        return (typeof e === 'object' && e.toString() === '[object HTMLInputElement]');
+        return (e && typeof e === 'object' && e.toString() === '[object HTMLInputElement]');
     }
 
 
@@ -57,7 +88,7 @@ var IV = (function () {
 
 
     function hasClass (e, classname) {
-	    return e.className.match(new RegExp('(\\s|^)' + classname + '(\\s|$)'));
+        return e.className.match(new RegExp('(\\s|^)' + classname + '(\\s|$)'));
     }
     
     
@@ -74,34 +105,65 @@ var IV = (function () {
     }
 
 
-    function displayNotification (e, msg) {
-        if (!e || typeof e !== 'object') { return; }
-      
-        var position = { x: e.offsetLeft, y: e.offsetTop },
-            span = document.createElement("p");
-       
-        span.style.left = (position.x + e.offsetWidth) + "px";
-        span.style.top = position.y + "px";
-        span.className += "iv-notification";
-        span.innerHTML = msg;
+    function applyDefaultClass (e) {
+        if (!hasClass(e, 'iv-input-default')) {
+            addClass(e, 'iv-input-default');
+        }
+    }
+    
+    
+    function hideNotification(e) {
+        if (!isInputElement(e)) { return };
+        var span = document.getElementById("iv-notify-" + e.id) || "";
+        if (span) { span.parentNode.removeChild(span); }
+    }
+    
+    
+    function displayNotification (e, msg, loc) {
+        if (!isInputElement(e)) { return; }
         
-        document.body.appendChild(span);
+        var exists = document.getElementById("iv-notify-" + e.id) || "",
+            span = exists ? exists : document.createElement("span");
+        
+        switch(loc) {
+            case 'bottom':
+                loc = _defaults.notify_location.bottom(e);
+                break;
+            case 'right':
+                loc = _defaults.notify_location.right(e);
+                break;
+            default:
+                loc = _defaults.notify_location.right(e);
+                break;
+        }
+        
+        span.style.left = loc.x + "px";
+        span.style.top = loc.y + "px";
+        span.innerHTML = msg;
+                
+        if (!exists) {
+            span.id = "iv-notify-" + e.id;
+            addClass(span, "iv-notification");
+            document.body.appendChild(span)        
+        }
     }
     
     
     function validate_email (addr) {
         if (isString(addr)) {
             return _email_validator_regex.test(addr);
-        } else if (isInputElement(addr)) { 
+        } else if (isInputElement(addr)) {
+            applyDefaultClass(addr);
             addr.onblur = function () {
                 var that = this;
                 if (_email_validator_regex.test(that.value)) {
                     removeClass(that, "iv-input-fail");
+                    hideNotification(that);
                     addClass(that, "iv-input-pass");
                 } else {
                     removeClass(that, "iv-input-pass");
                     addClass(that, "iv-input-fail");
-                    //displayNotification(that, "Invalid e-mail address");
+                    displayNotification(that, _defaults.msgs.email);
                 }
             }
         } else {
@@ -113,16 +175,18 @@ var IV = (function () {
     function validate_credit_card (num) {
         if (isString(num) || isNumber(num)) {
             return _credit_validator(num);
-        } else if (isInputElement(num)) { 
+        } else if (isInputElement(num)) {
+            applyDefaultClass(num);
             num.onblur = function () {
                 var that = this;
                 if (_credit_validator(that.value)) {
                     removeClass(that, "iv-input-fail");
+                    hideNotification(that);
                     addClass(that, "iv-input-pass");
                 } else {
                     removeClass(that, "iv-input-pass");
                     addClass(that, "iv-input-fail");
-                    //displayNotification(that, "Invalid credit card");
+                    displayNotification(that, _defaults.msgs.credit);
                 }
             }
         } else {
@@ -135,15 +199,17 @@ var IV = (function () {
         if (isString(str)) {
             return _password_validator(str);
         } else if (isInputElement(str)) { 
+            applyDefaultClass(str);
             str.onblur = function () {
                 var that = this;
                 if (_password_validator(that.value)) {
                     removeClass(that, "iv-input-fail");
+                    hideNotification(that);
                     addClass(that, "iv-input-pass");
                 } else {
                     removeClass(that, "iv-input-pass");
                     addClass(that, "iv-input-fail");
-                    //displayNotification(that, "Invalid password.");
+                    displayNotification(that, _defaults.msgs.password);
                 }
             }
         } else {

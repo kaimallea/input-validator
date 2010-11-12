@@ -32,7 +32,8 @@ var IV = (function () {
             msgs: {
                 email: "Invalid e-mail address",
                 credit: "Invalid credit card number",
-                password: "Password must be at least 8 characters and contain at least once uppercase letter"
+                password: "Password must be at least 8 characters and contain at least once uppercase letter",
+                confirm: "Passwords do not match"
             }
         };
     
@@ -318,6 +319,44 @@ var IV = (function () {
         }
     }
 
+
+    /**
+     * Confirm matching passwords
+     *
+     * Compares str1 to str2; they must be of the same type and can be
+     * strings or HTMLInputElements. If HTMLInputElements are used, str1
+     * must be the element you want to compare against the original (str2).
+     *
+     * @param str1  a string or HTMLInputElement
+     * @param str2  a string or HTMLInputElement
+     * @param errmsg  An optional error message to display adjacent
+     *                to the HTMLInputElement. A default message is
+     *                show if one is not specified.
+     *
+     * @return <code>true</code> if the passwords match and
+     *         <code>false</code> if they don't.
+     *
+     * @throws an error if there was a problem with the arguments.
+     */
+    function confirm_password (str1, str2, errmsg) {
+        if (isString(str1) && isString(str2)) {
+            return (str1 === str2);
+        } else if (isInputElement(str1) && isInputElement(str2)) {
+            str1.onblur = function () {
+                var that = this;
+                if (str2.value === str1.value) {
+                    removeClass(that, "iv-input-fail");
+                    hideNotification(that);
+                    addClass(that, "iv-input-pass");
+                } else {
+                    removeClass(that, "iv-input-pass");
+                    addClass(that, "iv-input-fail");
+                    displayNotification(that, ((errmsg) ? errmsg : _defaults.msgs.confirm));
+                }
+            }
+        }
+    }
+    
     return {    // Publicly accessible methods in the IV namespace
         email: function (addr, errmsg) {
             return validate_email(addr, errmsg);
@@ -329,6 +368,10 @@ var IV = (function () {
         
         password: function (str, errmsg) {
             return validate_password(str, errmsg);
+        },
+        
+        confirmpass: function (str1, str2, errmsg) {
+            return confirm_password(str1, str2, errmsg);
         }
     };
 })();

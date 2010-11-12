@@ -38,6 +38,9 @@ Visual indications for input validity are automatic and can be customized by edi
           // simple, visual indications
           IV.email(input_email);
           IV.credit(input_cc);
+          
+          // Specify your own error message in the notification
+          IV.email(input_email, "No. Try again.")
       
           // ... Also accepts strings
           alert( IV.email("someone@gmail.com") );

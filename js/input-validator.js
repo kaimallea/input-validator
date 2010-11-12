@@ -258,7 +258,7 @@ var IV = (function () {
      * @throws an error if a string, number or HTMLInputElement is not 
      *         passed.
      */
-    function validate_credit_card (num) {
+    function validate_credit_card (num, errmsg) {
         if (isString(num) || isNumber(num)) {
             return _credit_validator(num);
         } else if (isInputElement(num)) {
@@ -296,7 +296,7 @@ var IV = (function () {
      *
      * @throws an error if a string is not passed.
      */
-    function validate_password (str) {
+    function validate_password (str, errmsg) {
         if (isString(str)) {
             return _password_validator(str);
         } else if (isInputElement(str)) { 
@@ -324,7 +324,7 @@ var IV = (function () {
         },
         
         credit: function (num, errmsg) {
-            return validate_credit_card(num, errmsg),
+            return validate_credit_card(num, errmsg);
         },
         
         password: function (str, errmsg) {

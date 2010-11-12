@@ -2,6 +2,7 @@
  * Input Validator
  *
  * @author Kai Mallea (kmallea@gmail.com)
+ * @version 0.1a
  *
  */
 var IV = (function () {
@@ -36,7 +37,9 @@ var IV = (function () {
         };
     
     /**
-     * E-mail validator
+     * Regular expression to validate an e-mail address.
+     *
+     * @see http://www.regular-expressions.info/email.html
      */
     var _email_validator_regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
     
@@ -44,7 +47,7 @@ var IV = (function () {
     /**
      * Credit card validator
      *
-     * Luhn algorithm (http://en.wikipedia.org/wiki/Luhn_algorithm)
+     * @see http://en.wikipedia.org/wiki/Luhn_algorithm
      */
     var _credit_validator = function (num) {
         num = (num + '').replace(/\D+/g, '').split('').reverse();
@@ -71,32 +74,61 @@ var IV = (function () {
         return true;
     }
     
-   
+ 
+    /**
+     * Check for an HTMLInputElement
+     */
     function isInputElement (e) {
         return (e && typeof e === 'object' && e.toString() === '[object HTMLInputElement]');
     }
 
 
+    /**
+     * Check for a string
+     */
     function isString (str) {
         return (typeof str === 'string');
     }
 
 
+    /**
+     * Check for a number
+     */
     function isNumber (num) {
         return (typeof num === 'number');
     }
 
 
+    /**
+     * Check if a DOM element contains a specific class name.
+     *
+     * @param e  DOM element
+     * @param classname  CSS class name
+     *
+     * @return an array (true) or an empty array (false)
+     */
     function hasClass (e, classname) {
         return e.className.match(new RegExp('(\\s|^)' + classname + '(\\s|$)'));
     }
-    
-    
+
+
+    /**
+     * Add a class name to a DOM element if it doesn't already exist.
+     *
+     * @param e  DOM element
+     * @param classname  CSS class name
+     */    
     function addClass (e, classname) {
         if (!hasClass(e, classname)) { e.className += " " + classname };
     }
     
     
+    /**
+     * Remove a class name from a DOM element if it exists.
+     *
+     * @param e  DOM element
+     * @param classname  CSS class name
+     */  
     function removeClass (e, classname) {
 	    if (hasClass(e, classname)) {
             var reg = new RegExp('(\\s|^)' + classname + '(\\s|$)');
@@ -105,6 +137,12 @@ var IV = (function () {
     }
 
 
+    /**
+     * Apply this application's default class name to a DOM element 
+     * (iv-input-default).
+     *
+     * @param e  DOM element
+     */
     function applyDefaultClass (e) {
         if (!hasClass(e, 'iv-input-default')) {
             addClass(e, 'iv-input-default');
@@ -112,13 +150,27 @@ var IV = (function () {
     }
     
     
+    /**
+     * Hide (destroy) a notification associated with an
+     * HTMLInputElement.
+     *
+     * @param e  HTMLInputElement
+     */    
     function hideNotification(e) {
         if (!isInputElement(e)) { return };
         var span = document.getElementById("iv-notify-" + e.id) || "";
         if (span) { span.parentNode.removeChild(span); }
     }
     
-    
+
+    /**
+     * Display a notification adjacent to an HTMLInputElement.
+     *
+     * @param e  HTMLInputElement
+     * @param msg  The message to display
+     * @param loc  The location of the notification relative to the
+     *            HTMLInputElement ('right', 'bottom').
+     */   
     function displayNotification (e, msg, loc) {
         if (!isInputElement(e)) { return; }
         
@@ -126,15 +178,14 @@ var IV = (function () {
             span = exists ? exists : document.createElement("span");
         
         switch(loc) {
-            case 'bottom':
-                loc = _defaults.notify_location.bottom(e);
-                break;
-            case 'right':
-                loc = _defaults.notify_location.right(e);
-                break;
-            default:
-                loc = _defaults.notify_location.right(e);
-                break;
+        case 'bottom':
+            loc = _defaults.notify_location.bottom(e);
+            break;
+        case 'right':
+            loc = _defaults.notify_location.right(e);
+            break;
+        default:
+            loc = _defaults.notify_location.right(e);
         }
         
         span.style.left = loc.x + "px";
@@ -148,7 +199,20 @@ var IV = (function () {
         }
     }
     
-    
+
+    /**
+     * Validate whether or not an e-mail address is properly formatted.
+     * The addr argument must be a string or an HTMLInputElement. The
+     * former will return a boolean, the latter will assign a function 
+     * to the HTMLInputElement's onblur property/event.
+     *
+     * @param addr  a string or HTMLInputElement
+     *
+     * @return <code>true</code> if the e-mail address is valid or 
+     *         <code>false</code> is the its invalid.
+     *
+     * @throws an error if a string or HTMLInputElement is not passed.
+     */
     function validate_email (addr) {
         if (isString(addr)) {
             return _email_validator_regex.test(addr);
@@ -172,6 +236,22 @@ var IV = (function () {
     }
 
 
+    /**
+     * Validates a credit card number using the Luhn algorithm.
+     *
+     * The num argument must be a number, string or an 
+     * HTMLInputElement. A string or number will return a 
+     * boolean, an HTMLInputElement will assign a function to
+     * its onblur property/event.
+     *
+     * @param num  a string, number or HTMLInputElement
+     *
+     * @return <code>true</code> if the credit card is valid or 
+     *         <code>false</code> is the its invalid.
+     *
+     * @throws an error if a string, number or HTMLInputElement is not 
+     *         passed.
+     */
     function validate_credit_card (num) {
         if (isString(num) || isNumber(num)) {
             return _credit_validator(num);
@@ -194,7 +274,19 @@ var IV = (function () {
         }
     }
     
-    
+
+    /**
+     * Validates a password's complexity.
+     *
+     * The str argument must be a string. Returns true or false.
+     *
+     * @param str  a string
+     *
+     * @return <code>true</code> if the password is complex and
+     *         <code>false</code> it is not.
+     *
+     * @throws an error if a string is not passed.
+     */
     function validate_password (str) {
         if (isString(str)) {
             return _password_validator(str);
@@ -217,7 +309,7 @@ var IV = (function () {
         }
     }
 
-    return {
+    return {    // Publicly accessible methods in the IV namespace
         email: function (addr) {
             return validate_email(addr);
         },

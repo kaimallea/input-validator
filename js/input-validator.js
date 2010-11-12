@@ -207,13 +207,16 @@ var IV = (function () {
      * to the HTMLInputElement's onblur property/event.
      *
      * @param addr  a string or HTMLInputElement
+     * @param errmsg  An optional error message to display adjacent
+     *                to the HTMLInputElement. A default message is
+     *                show if one is not specified.
      *
      * @return <code>true</code> if the e-mail address is valid or 
      *         <code>false</code> is the its invalid.
      *
      * @throws an error if a string or HTMLInputElement is not passed.
      */
-    function validate_email (addr) {
+    function validate_email (addr, errmsg) {
         if (isString(addr)) {
             return _email_validator_regex.test(addr);
         } else if (isInputElement(addr)) {
@@ -227,7 +230,7 @@ var IV = (function () {
                 } else {
                     removeClass(that, "iv-input-pass");
                     addClass(that, "iv-input-fail");
-                    displayNotification(that, _defaults.msgs.email);
+                    displayNotification(that, ((errmsg) ? errmsg : _defaults.msgs.email));
                 }
             }
         } else {
@@ -245,6 +248,9 @@ var IV = (function () {
      * its onblur property/event.
      *
      * @param num  a string, number or HTMLInputElement
+     * @param errmsg  An optional error message to display adjacent
+     *                to the HTMLInputElement. A default message is
+     *                show if one is not specified.
      *
      * @return <code>true</code> if the credit card is valid or 
      *         <code>false</code> is the its invalid.
@@ -266,7 +272,7 @@ var IV = (function () {
                 } else {
                     removeClass(that, "iv-input-pass");
                     addClass(that, "iv-input-fail");
-                    displayNotification(that, _defaults.msgs.credit);
+                    displayNotification(that, ((errmsg) ? errmsg : _defaults.msgs.credit));
                 }
             }
         } else {
@@ -281,6 +287,9 @@ var IV = (function () {
      * The str argument must be a string. Returns true or false.
      *
      * @param str  a string
+     * @param errmsg  An optional error message to display adjacent
+     *                to the HTMLInputElement. A default message is
+     *                show if one is not specified.
      *
      * @return <code>true</code> if the password is complex and
      *         <code>false</code> it is not.
@@ -301,7 +310,7 @@ var IV = (function () {
                 } else {
                     removeClass(that, "iv-input-pass");
                     addClass(that, "iv-input-fail");
-                    displayNotification(that, _defaults.msgs.password);
+                    displayNotification(that, ((errmsg) ? errmsg : _defaults.msgs.password));
                 }
             }
         } else {
@@ -310,16 +319,16 @@ var IV = (function () {
     }
 
     return {    // Publicly accessible methods in the IV namespace
-        email: function (addr) {
-            return validate_email(addr);
+        email: function (addr, errmsg) {
+            return validate_email(addr, errmsg);
         },
         
-        credit: function (num) {
-            return validate_credit_card(num);
+        credit: function (num, errmsg) {
+            return validate_credit_card(num, errmsg),
         },
         
-        password: function (str) {
-            return validate_password(str);
+        password: function (str, errmsg) {
+            return validate_password(str, errmsg);
         }
     };
 })();

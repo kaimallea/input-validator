@@ -6,34 +6,44 @@
  *
  */
 var IV = (function () {
-    var _defaults = {
+    var _settings = {
+        
+        password: {
+            min: 6,
+            complex: true // at least one upper-case char
+        },
+        
+        // Locations for notifications
+        notify_location: {
             
-            // Locations for notifications
-            notify_location: {
-                
-                // Below element e
-                bottom: function (e) {
-                    var pos = findPos(e);
-                    pos.y += e.offsetHeight;
-                    return pos;      
-                },
-                
-                // To the right of element e
-                right: function (e) {
-                    var pos = findPos(e);
-                    pos.x += e.offsetWidth;
-                    return pos;
-                }
+            // Below element e
+            bottom: function (e) {
+                var pos = findPos(e);
+                pos.y += e.offsetHeight;
+                return pos;      
             },
             
-            // Default messages to display in notifications
-            msgs: {
-                email: "Invalid e-mail address",
-                credit: "Invalid credit card number",
-                password: "Password must be at least 8 characters and contain at least once uppercase letter",
-                confirm: "Passwords do not match"
+            // To the right of element e
+            right: function (e) {
+                var pos = findPos(e);
+                pos.x += e.offsetWidth;
+                return pos;
             }
-        };
+        },
+        
+        // Default messages to display in notifications
+        msgs: {
+            email: "Invalid e-mail address",
+            credit: "Invalid credit card number",
+            password: function () {
+                var msg = "Password must be at least $n characters".replace(/\$n/ig, _settings.password.min);
+                msg += _settings.password.complex ? " and contain at least one uppercase letter" : "";
+                return msg; 
+            },
+            confirm: "Passwords do not match"
+        }
+    };
+    
     
     /**
      * Regular expression to validate an e-mail address.
@@ -65,10 +75,10 @@ var IV = (function () {
      */
     var _password_validator = function (str) {
         // Minimum length
-        if (str.length < 8) { return false }
+        if (str.length < _settings.password.min) { return false }
 
         // At least one capital letter
-        if (!(/[A-Z]/).test(str)) { return false }
+        if (_settings.password.complex && !(/[A-Z]/).test(str)) { return false }
 
         return true;
     }
@@ -197,13 +207,13 @@ var IV = (function () {
         
         switch(loc) {
         case 'bottom':
-            loc = _defaults.notify_location.bottom(e);
+            loc = _settings.notify_location.bottom(e);
             break;
         case 'right':
-            loc = _defaults.notify_location.right(e);
+            loc = _settings.notify_location.right(e);
             break;
         default:
-            loc = _defaults.notify_location.right(e);
+            loc = _settings.notify_location.right(e);
         }
         
         span.style.left = loc.x + "px";
@@ -248,7 +258,7 @@ var IV = (function () {
                 } else {
                     removeClass(that, "iv-input-pass");
                     addClass(that, "iv-input-fail");
-                    displayNotification(that, ((errmsg) ? errmsg : _defaults.msgs.email));
+                    displayNotification(that, ((errmsg) ? errmsg : _settings.msgs.email));
                 }
             }
         } else {
@@ -290,7 +300,7 @@ var IV = (function () {
                 } else {
                     removeClass(that, "iv-input-pass");
                     addClass(that, "iv-input-fail");
-                    displayNotification(that, ((errmsg) ? errmsg : _defaults.msgs.credit));
+                    displayNotification(that, ((errmsg) ? errmsg : _settings.msgs.credit));
                 }
             }
         } else {
@@ -328,7 +338,7 @@ var IV = (function () {
                 } else {
                     removeClass(that, "iv-input-pass");
                     addClass(that, "iv-input-fail");
-                    displayNotification(that, ((errmsg) ? errmsg : _defaults.msgs.password));
+                    displayNotification(that, ((errmsg) ? errmsg : _settings.msgs.password()));
                 }
             }
         } else {
@@ -368,7 +378,7 @@ var IV = (function () {
                 } else {
                     removeClass(that, "iv-input-pass");
                     addClass(that, "iv-input-fail");
-                    displayNotification(that, ((errmsg) ? errmsg : _defaults.msgs.confirm));
+                    displayNotification(that, ((errmsg) ? errmsg : _settings.msgs.confirm));
                 }
             }
         }

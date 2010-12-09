@@ -13,18 +13,16 @@ var IV = (function () {
                 
                 // Below element e
                 bottom: function (e) {
-                    return {
-                        x: e.offsetLeft,
-                        y: (e.offsetTop + e.offsetHeight)
-                    };                    
+                    var pos = findPos(e);
+                    pos.y += e.offsetHeight;
+                    return pos;      
                 },
                 
                 // To the right of element e
                 right: function (e) {
-                    return {
-                        x: (e.offsetLeft + e.offsetWidth),
-                        y: e.offsetTop
-                    };
+                    var pos = findPos(e);
+                    pos.x += e.offsetWidth;
+                    return pos;
                 }
             },
             
@@ -76,6 +74,25 @@ var IV = (function () {
     }
     
  
+    /**
+     * Locate the real position of an element,
+     * relative to its parent's offsets
+     */
+    function findPos (obj) {
+        var curleft = 0,
+            curtop = 0;
+                        
+        if (obj.offsetParent) {
+            do {
+                curleft += obj.offsetLeft;
+                curtop += obj.offsetTop;
+            } while (obj = obj.offsetParent);
+            
+            return { x: curleft, y: curtop };
+        }
+    }
+
+
     /**
      * Check for an HTMLInputElement
      */

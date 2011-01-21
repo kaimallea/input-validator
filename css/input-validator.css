@@ -1,25 +1,46 @@
-.iv-input-default {
+/* Default style for inputs */
+input.iv-input-default {
     border: solid 1px #000;
     padding: 5px;
+    
     -webkit-border-radius: 2px;
-    -moz-border-radius: 2px;
+       -moz-border-radius: 2px;
+        -ie-border-radius: 2px;
+         -o-border-radius: 2px;
+            border-radius: 2px;
 }
 
-.iv-input-pass {
+input.iv-input-default:focus { }
+
+
+/* Success */
+input.iv-input-pass {
     border: solid 2px #00cc00;
+    
     -webkit-box-shadow: 0 0 10px #00cc00;
-    -moz-box-shadow: 0 0 10px #00cc00;
+       -moz-box-shadow: 0 0 10px #00cc00;
+        -ie-box-shadow: 0 0 10px #00cc00;
+         -o-box-shadow: 0 0 10px #00cc00;
+            box-shadow: 0 0 10px #00cc00;        
 }
 
-.iv-input-fail {
+
+/* Failure */
+input.iv-input-fail {
     border: solid 2px #ff0000;
+    
     -webkit-box-shadow: 0 0 10px #ff0000;
     -moz-box-shadow: 0 0 10px #ff0000;
+     -ie-box-shadow: 0 0 10px #ff0000;
+      -o-box-shadow: 0 0 10px #ff0000;
+         box-shadow: 0 0 10px #ff0000;  
 }
 
-.iv-notification {
+
+/* Notifications */
+span.iv-notification {
     color: #ff0000;
     position: absolute;
-    z-index: 999999;
+    z-index: 99;
     margin: 0 0 0 15px;
 }

@@ -20,7 +20,7 @@ var IV = (function () {
             bottom: function (e) {
                 var pos = findPos(e);
                 pos.y += e.offsetHeight;
-                return pos;      
+                return pos;
             },
             
             // To the right of element e
@@ -74,12 +74,12 @@ var IV = (function () {
      * Password validator
      */
     var _password_validator = function (str) {
-        // Minimum length
-        if (str.length < _settings.password.min) { return false }
-
         // At least one capital letter
         if (_settings.password.complex && !(/[A-Z]/).test(str)) { return false }
-
+        
+        // Minimum length
+        if (str.length < _settings.password.min) { return false }
+        
         return true;
     }
     
@@ -384,7 +384,48 @@ var IV = (function () {
         }
     }
     
+    // Automatically find all input elements and bind the appropriate
+    // methods based on name or id strings
+    function automap () {
+        var inputs = document.getElementsByTagName('input'),
+            input_types = {},   // Keep track of detected input types
+            i = 0,
+            max = inputs.length, input, name, id;
+        
+        for (; i < max; i += 1) {
+            input = inputs[i];
+            name = input.name;
+            id = input.id;
+            
+            if (input && (typeof name === 'string' || typeof id === 'string')) {
+                switch(true) {
+                case (/email/ig.test(name) || /email/ig.test(id)):
+                    validate_email(input);
+                    break;
+                case (/credit/ig.test(name) || /credit/ig.test(id)):
+                    validate_credit_card(input);
+                    break;
+                case (/password/ig.test(name) || /password/ig.test(id)):
+                    input_types['password'] = input;
+                    validate_password(input);
+                    break;
+                case (/confirm/ig.test(name) || /confirm/ig.test(id)):
+                    if (input_types['password']) {
+                        confirm_password(input, input_types['password']);   
+                    }
+                    break;
+                default:
+                    break;
+                }   
+            }
+        }
+    }
+    
     return {    // Publicly accessible methods in the IV namespace
+        automap: function () {
+            automap();
+        },
+        
         email: function (addr, errmsg) {
             return validate_email(addr, errmsg);
         },

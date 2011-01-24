@@ -7,9 +7,11 @@ Tons. :)
 ## Usage
 
 1. Create a link to the CSS stylesheet in your document's `<head>`
-2. Include the Javascript file in your document's `<head>` or at the bottom of your document's `<body>`.
+2. Include the Javascript file in your document's `<head>` or at the bottom of your document's `<body>` (right before the `</body>` closing tag -- recommended).
 
 To enable validation on any input field, such as e-mail, use `IV.email(document.getElementById("input-email"));`. 
+
+Or, to automatically create bindings based on an input element's `name` or `id` attribute, call `IV.automap()`.
 
 Methods are polymorphic, so you can pass in an input element object like above, or a primitive value for a quick check. E.g., `alert( IV.email("kai@mallea.net") === true );`
 
